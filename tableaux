@@ -1,0 +1,123 @@
+<!doctype HTML>
+<head>
+<meta charset="utf-8">
+<link rel='stylesheet' href= 'tableauxcss.css'/>  
+    <title>tableaux</title>
+</head>
+<body>
+<?php
+    session_start();
+    $var= array();
+    $f = fopen('elevesYM2.csv','r');
+    while($file=fgetcsv($f)){
+     array_push($var,array($file[0], $file[1]));}
+    function pagination($p , $nu, $var) {
+        for( $i = $p  ;  $i <= $nu  ;  $i++ ) {
+            for( $j = 0  ;  $j < 2  ;  $j++ ) {
+                echo $var[$i][$j];
+                if( $j == 1 && ! (empty($var[$i])) ) {
+                    ?> <br>  
+        <table>
+            <tr>
+                <td>
+                    Exercice
+                    <table border=1>
+                    <?php 
+                    $xx = random_int(600,200);
+                    $y = random_int(300,700);
+                    $z = random_int(400,600);
+                    $d = random_int(150,500);
+                    ?>
+                        <tr><td>binaire</td><td>décimal</td><td>Hexdécimal</td><td>Octal</td></tr>
+                        <tr>  <td><?php echo decbin($xx) ?></td> <td></td>  <td></td>  <td></td>  </tr>
+                        <tr>  <td></td>  <td><?php echo $y ?></td>  <td></td>  <td></td>  </tr>
+                        <tr>  <td></td>  <td></td>  <td><?php echo dechex($z) ?></td>  <td></td>  </tr>
+                        <tr>  <td></td>  <td></td>  <td></td>  <td><?php echo decoct($d) ?></td>  </tr>                
+                    </table>
+                </td>
+                <td>
+                    solution
+                    <table border=1>
+                        <tr><td>binaire</td><td>Ddécimal</td><td>Hexadécimal</td><td>Octal</td></tr>
+                        <tr>  <td><?php echo decbin($xx) ?></td>  <td><?php echo $xx ?></td>  <td><?php echo dechex($xx) ?></td> <td><?php echo decoct($xx) ?></td>  </tr>       
+                        <tr>  <td><?php echo decbin($y) ?></td>  <td><?php echo $y ?></td>  <td><?php echo dechex($y) ?></td> <td><?php echo decoct($y) ?></td>  </tr>
+                        <tr>  <td><?php echo decbin($z) ?></td>  <td><?php echo $z ?></td>  <td><?php echo dechex($z) ?></td> <td><?php echo decoct($z) ?></td>  </tr>
+                        <tr>  <td><?php echo decbin($d) ?></td>  <td><?php echo $d ?></td>  <td><?php echo dechex($d) ?></td>  <td><?php echo decoct($d) ?></td>  </tr>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+       
+                    <br> 
+                    <?php                        
+                } 
+            }   
+        }
+    }
+?>
+<h2> 
+    <?php  
+        if (empty($_POST) && ! isset($_SESSION['x'])) {
+            $x = 1; 
+        }
+        else if ( ! empty($_POST) ) {
+            $nu = array_keys($_POST)[0];
+            if (in_array($nu, array('Suiv', 'Prec'))) {
+                $x = $_SESSION['x'];
+                if (strcmp($nu, 'Prec') && $x < count($var) - 3 ) {
+                    $x += 2;      
+                }
+                else if (strcmp($nu, 'Suiv') && $x > 1 ) { 
+                    $x -= 2; 
+                }    
+            } 
+            else if(in_array($nu, array('Suiv2', 'Prec2'))){
+                $x = $_SESSION['x'];
+                if(strcmp($nu,'Suiv2')){
+                    $x = 1;
+                }
+                else if(strcmp($nu,'Prec2')){
+                    if(count($var)%2 == 0){
+                        $x = count($var) - 3;
+                    }
+                    else {
+                        $x = count($var) - 2;
+                    }
+                }
+            }
+            else {
+                $x = intval($nu) * 2 - 1; 
+            }       
+        } 
+        else { 
+            $x = $_SESSION['x']; 
+        }
+        $_SESSION['x'] = $x;
+        $b = $x + 1; 
+        pagination($x, $b, $var);    
+    ?> 
+    <form  method="post" >  
+    <button name="Prec2" > <span> &laquo;&laquo; </span></button> 
+        <button name="Prec" > <span> &laquo; </span></button>  &nbsp;&nbsp;&nbsp; 
+        <?php 
+            for($k = 1; $k <= intval(count($var)/2) ; $k++) {   
+                if($k == intval(count($var))/2 && count($var)%2 == 0 ) {
+                   break; 
+                }
+        ?>
+            <input type="submit" name="<?php echo $k ?>" value="<?php echo $k ?>" > &nbsp;&nbsp;&nbsp; 
+        <?php  
+            } 
+        ?> 
+        <button  name="Suiv" > <span> &raquo; </span></button>  
+        <button  name="Suiv2" > <span> &raquo;&raquo; </span></button> 
+
+        <p><?php echo $b/2 ?></p> 
+
+        
+        <button onclick="window.print();"><span>imprimer</span></button>
+    </form> 
+</h2>
+</body>
+</html>
